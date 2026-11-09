@@ -5,7 +5,7 @@ import { FaLocationArrow } from 'react-icons/fa'
 
 const {VITE_API_URL, VITE_MAP_TOKEN }= import.meta.env;
 
-
+console.log("token", VITE_MAP_TOKEN)
 export default function MapRender(){
    let [selectedMarker, setSelectedMarker] = useState(null);
    let [neighborhoods, setNeighborhoods] = useState(null);

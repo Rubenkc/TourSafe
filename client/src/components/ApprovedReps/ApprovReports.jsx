@@ -44,7 +44,7 @@ export default function ApprovedReports(){
 
             {(reports && isLoading === false) && (reports.length > 0 ? reports.map(rep => {
 
-                const dtae 
+                
 
                 return (
                     <div key={rep.id} className='HomeCard'>

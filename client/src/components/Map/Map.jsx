@@ -59,7 +59,9 @@ export default function MapRender(){
       return {
          type: "Neighborhood",
          properties:{
-            neighborhood: n.name
+            neighborhood: n.name,
+            neighcrimes: n.crimesbyneigh,
+            tcrimes: n.totalcrimes
          },
          geometry: {
             type: n.type,
@@ -80,7 +82,16 @@ export default function MapRender(){
                mapStyle="mapbox://styles/mapbox/streets-v9"
             >
                <Source id='zone' type='geojson' data={zone}>
-                  <Layer id="zone-fill" type='fill' source='zone' paint={{ "fill-color": "blue", "fill-opacity": 0.5 }}/>
+                  <Layer id="zone-fill" type='fill' source='zone' paint={{ 
+                     "fill-color": [
+                     'interpolate',
+                     ['linear'],
+                     ['*', 100, ["/",['get', "neighcrimes"], ["get", "tcrimes"]]],
+                     0, '#FFF0F0',
+                     100, '#990000'
+
+
+                  ] }}/>
                   <Layer id="zone-outline" type='line' source='zone' paint={{"line-color": "black", "line-width": 2}}/>
                   <Layer id="zone-name" type='symbol' source='zone' layout={{"text-field": ["get", "neighborhood"], "text-size": 10, "text-anchor": "center" }} />
                </Source>

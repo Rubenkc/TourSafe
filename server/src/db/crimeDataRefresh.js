@@ -1,33 +1,28 @@
 import pool from "./index.js";
 import { fetchInfo, deleteCrimes } from './queries/crimes.js'
+import crimeFetch from "./utils/crimeFetch.js";
 
 
 
 export async function fetchCrimeData(){
     let fetch = true;
-    let second = 1000;
-    let minute = 60;
-    let hour = 60;
-    let day = 24;
+    const twenty_four_hour_ms = 24 * 60 * 60 * 1000;
 
     
     try{
 
         const fetchData = await fetchInfo();
-        let milliDate = new Date(fetchData.last_fetched)
+        
 
-        if( Date.now() > milliDate.getTime() + (second * minute * hour * day)){ // utc time have to convert to central
+        if( Date.now() >= fetchData.last_fetch.getTime() + (twenty_four_hour_ms)){ 
 
-            while(fetch){
-                
-
-                const result = await fetch(`https://data.cityofchicago.org/resource/f6bk-yv3r.json?limit=1000&offset=0`)
-            }     
+            await crimeFetch()
+            
         }
         
         await deleteCrimes();
         
     } catch (e){
-        
+        throw e
     }
 }

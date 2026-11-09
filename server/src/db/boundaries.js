@@ -21,9 +21,9 @@ async function NeighFetch(db = pool){
         for (const neighborhood of result ){
 
             await db.query(`
-            INSERT INTO neighborhoods( name, type, coords)
-            VALUES ($1, $2, $3)
-            `, [neighborhood.pri_neigh, neighborhood.the_geom.type, JSON.stringify(neighborhood.the_geom.coordinates) ])
+            INSERT INTO neighborhoods( name, type, geom)
+            VALUES ($1, $2, ST_GeomFromGeoJSON($3) )
+            `, [neighborhood.pri_neigh, neighborhood.the_geom.type, neighborhood.the_geom ])
         } 
 
     } catch(e) {

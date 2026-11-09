@@ -1,7 +1,9 @@
-import { Pool } from 'pg';
 import "dotenv/config";
+import { Pool } from 'pg';
 
 
+
+console.log("string key", process.env.CONNECTION_STRING)
 
 const pool = new Pool(
     process.env.CONNECTION_STRING ? {

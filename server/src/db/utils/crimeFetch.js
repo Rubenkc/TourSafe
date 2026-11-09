@@ -1,5 +1,7 @@
-import { insertCrimes, fetchInfo, insertOffset } from "../queries/crimes";
-import pool from "../index.js";
+import { insertCrimes, fetchInfo, insertOffset, lastFetchUpd } from '../queries/crimes.js';
+import pool from '../index.js';
+
+
 
  
 
@@ -24,18 +26,26 @@ export default async function crimeFetch(){
         
         while(loop){ // do.. while loop revision tomorrow
             const { current_offset } = await fetchInfo();
-            const res = await fetch(`https://data.cityofchicago.org/resource/f6bk-yv3r.json?$limit=${limit}&$offset=${current_offset}&$where=date> '${dateString}'&$order=id ASC`);
+            const res = await fetch(`https://data.cityofchicago.org/resource/ijzp-q8t2.json?$select=case_number,date,primary_type,location&$limit=${limit}&$offset=${current_offset}&$where=date> '${dateString}' AND location IS NOT NULL&$order=id ASC`);
+
             const rows = await res.json();
+
+            if (!res.ok) {
+                throw new Error(`Request failed: ${response.status}`);
+            }
+
+           
             const client = await pool.connect();
-            
+            // filter the returned object
 
             if(rows.length === 0){
                 await insertOffset(0, true)
-                client.release();
+               
                 break;
 
             } else if ( rows.length < limit){
-                loop = false;
+                await insertOffset(0, true)
+                break;
             }
 
             
@@ -46,11 +56,12 @@ export default async function crimeFetch(){
 
                 for(let i = 0; i < rows.length; i += 100){
                     let batch = rows.slice(i, i + 100);
+                    console.log('batched crime', batch)
 
                     await insertCrimes(batch, client);
                 }
 
-                await insertOffset(loop ? current_offset + limit : 0, true, client);
+                await insertOffset(current_offset + limit, true, client);
 
                 await client.query('COMMIT')
 
@@ -58,7 +69,9 @@ export default async function crimeFetch(){
             
                                 
             } catch(e){
+                
                 await client.query('ROLLBACK');
+                
                 throw e
 
             } finally{
@@ -70,10 +83,13 @@ export default async function crimeFetch(){
             
             
             
-           
+           await lastFetchUpd()
 
             
     } catch(e) {
+        
         throw e;
     }  
 }
+
+crimeFetch();

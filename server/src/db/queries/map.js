@@ -9,13 +9,14 @@ import pool from '../index.js';
             JOIN crimes c ON ST_Contains(n.geom, c.location)
             GROUP BY n.id
             CROSS JOIN
-            SELECT COUNT(primary_type) totalcrimes;
+            SELECT COUNT(primary_type) totalcrimes
+            FROM crimes;
             `)
 
             return rows
 
     } catch(e){
-        console.log(e)
+       throw e
     }
 };
 

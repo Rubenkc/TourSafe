@@ -4,7 +4,7 @@ import pool from '../index.js';
  export async function getNeigh(db = pool){
     try{
         const {rows} = await db.query(`
-            SELECT n.id, n.name, n.type, ST_AsGeoJSON(n.geom) geom, COUNT(n.name) crimesbyneigh, t.totalcrimes
+            SELECT n.id, n.name, n.type, ST_AsGeoJSON(n.geom)::json geom, COUNT(n.name) crimesbyneigh, t.totalcrimes
             FROM neighborhoods n
             JOIN crimes c ON ST_Contains(n.geom, c.location) 
             CROSS JOIN(
